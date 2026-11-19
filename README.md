@@ -10,7 +10,7 @@ sind eingetragen.
 | --- | --- | --- |
 | 1 | Grundgerüst, Login, Einladungen, Benutzerverwaltung | fertig |
 | 2 | Kalender-Ansichten, Feiertage, Schulferien | fertig |
-| 3 | Termine, Kategorien, Filter | offen |
+| 3 | Termine, Kategorien, Filter | fertig |
 | 4 | Wiederholung, Einladungen mit Zu-/Absage | offen |
 | 5 | Push-Benachrichtigungen und Erinnerungen | offen |
 | 6 | PWA, Feinschliff, Anleitung | offen |

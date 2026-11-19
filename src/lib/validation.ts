@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { MIN_PASSWORD_LENGTH } from "./password";
+/** Mindestlänge für Passwörter (hier statt in password.ts, damit Client-Code kein Argon2 lädt). */
+export const MIN_PASSWORD_LENGTH = 8;
 
 export const ROLES = ["admin", "member", "reader"] as const;
 
@@ -102,3 +103,67 @@ export function schoolYearOf(date: string): string {
   const start = m >= 8 ? y : y - 1;
   return `${start}/${String((start + 1) % 100).padStart(2, "0")}`;
 }
+
+const optionalText = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max, `Bitte höchstens ${max} Zeichen.`)
+    .transform((v) => (v === "" ? null : v));
+
+const time = z.string().regex(/^\d{2}:\d{2}$/, "Bitte eine gültige Uhrzeit wählen.");
+
+/** Erinnerungs-Vorlagen in Minuten vor Beginn. */
+export const REMINDER_PRESETS: { minutes: number; label: string }[] = [
+  { minutes: 0, label: "Zu Beginn" },
+  { minutes: 10, label: "10 Minuten vorher" },
+  { minutes: 30, label: "30 Minuten vorher" },
+  { minutes: 60, label: "1 Stunde vorher" },
+  { minutes: 120, label: "2 Stunden vorher" },
+  { minutes: 1440, label: "1 Tag vorher" },
+  { minutes: 2880, label: "2 Tage vorher" },
+  { minutes: 10080, label: "1 Woche vorher" },
+];
+
+export const eventSchema = z
+  .object({
+    title: z.string().trim().min(1, "Bitte eine Beschreibung eingeben.").max(120, "Die Beschreibung ist zu lang (max. 120 Zeichen)."),
+    allDay: z.boolean(),
+    startDate: isoDate,
+    startTime: z.union([time, z.literal("")]),
+    endDate: z.union([isoDate, z.literal("")]),
+    endTime: z.union([time, z.literal("")]),
+    location: optionalText(200),
+    notes: optionalText(2000),
+    categoryId: z.union([z.uuid(), z.literal("")]).transform((v) => (v === "" ? null : v)),
+    visibility: z.enum(["public", "private"]),
+    reminders: z.array(z.number().int().min(0).max(40320)).max(5, "Höchstens 5 Erinnerungen."),
+  })
+  .superRefine((v, ctx) => {
+    if (!v.allDay && !v.startTime) ctx.addIssue({ code: "custom", message: "Bitte eine Uhrzeit angeben.", path: ["startTime"] });
+  });
+
+export type EventInputData = z.infer<typeof eventSchema>;
+
+/** FormData des Termin-Formulars → geprüfte Daten. */
+export function parseEventForm(form: FormData) {
+  const o = formToObject(form);
+  return eventSchema.safeParse({
+    title: o.title ?? "",
+    allDay: o.allDay === "on",
+    startDate: o.startDate ?? "",
+    startTime: o.startTime ?? "",
+    endDate: o.endDate ?? "",
+    endTime: o.endTime ?? "",
+    location: o.location ?? "",
+    notes: o.notes ?? "",
+    categoryId: o.categoryId ?? "",
+    visibility: o.visibility === "private" ? "private" : "public",
+    reminders: [...new Set(form.getAll("reminders").map((r) => Number(r)))],
+  });
+}
+
+export const categorySchema = z.object({
+  name: z.string().trim().min(1, "Bitte einen Namen eingeben.").max(40),
+  color,
+});

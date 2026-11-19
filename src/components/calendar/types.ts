@@ -1,6 +1,29 @@
 export type SchoolHoliday = { id: string; name: string; startDate: string; endDate: string };
 
-export type CalendarData = { schoolHolidays: SchoolHoliday[] };
+export type CalendarEvent = {
+  id: string;
+  title: string;
+  allDay: boolean;
+  start: string;
+  end: string;
+  ownerId: string;
+  categoryId: string | null;
+  visibility: "public" | "private";
+  location: string | null;
+};
+
+export type CalendarData = { schoolHolidays: SchoolHoliday[]; events: CalendarEvent[] };
+
+export type Person = { id: string; name: string; color: string };
+export type Category = { id: string; name: string; color: string; shared: boolean };
+
+/** Ausgeblendete Personen/Kategorien. "none" = Termine ohne Kategorie. */
+export type Filters = { hiddenUserIds: string[]; hiddenCategoryIds: string[] };
+
+export function isVisible(e: Pick<CalendarEvent, "ownerId" | "categoryId">, f: Filters): boolean {
+  if (f.hiddenUserIds.includes(e.ownerId)) return false;
+  return !f.hiddenCategoryIds.includes(e.categoryId ?? "none");
+}
 
 export type ViewName = "year" | "dayGridMonth" | "timeGridWeek" | "timeGridDay" | "list";
 

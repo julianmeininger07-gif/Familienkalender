@@ -75,3 +75,21 @@ html, body {
     font-size: 0.65rem;
   }
 }
+
+/* Termine: Personenfarbe, Rand in Kategoriefarbe */
+.fk-calendar .fc .fk-termin {
+  cursor: pointer;
+  border-width: 0 0 0 4px;
+  border-radius: 4px;
+}
+.fk-calendar .fc .fc-daygrid-dot-event.fk-termin {
+  background: var(--fc-event-bg-color);
+  color: #fff;
+}
+.fk-calendar .fc .fc-daygrid-dot-event.fk-termin .fc-event-title,
+.fk-calendar .fc .fc-daygrid-dot-event.fk-termin .fc-event-time {
+  color: #fff;
+}
+.fk-calendar .fc .fc-daygrid-dot-event.fk-termin .fc-daygrid-event-dot {
+  display: none;
+}

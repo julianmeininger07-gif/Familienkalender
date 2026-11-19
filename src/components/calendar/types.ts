@@ -10,7 +10,14 @@ export type CalendarEvent = {
   categoryId: string | null;
   visibility: "public" | "private";
   location: string | null;
+  occurrence: string | null;
+  invitation: { response: "pending" | "accepted" | "declined"; required: boolean } | null;
 };
+
+/** Link zur Detailseite, bei Serien mit dem konkreten Vorkommen. */
+export function eventHref(e: Pick<CalendarEvent, "id" | "occurrence">): string {
+  return e.occurrence ? `/termin/${e.id}?am=${encodeURIComponent(e.occurrence)}` : `/termin/${e.id}`;
+}
 
 export type CalendarData = { schoolHolidays: SchoolHoliday[]; events: CalendarEvent[] };
 

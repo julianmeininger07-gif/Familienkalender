@@ -93,3 +93,7 @@ html, body {
 .fk-calendar .fc .fc-daygrid-dot-event.fk-termin .fc-daygrid-event-dot {
   display: none;
 }
+.fk-calendar .fc .fk-abgesagt {
+  opacity: 0.45;
+  text-decoration: line-through;
+}

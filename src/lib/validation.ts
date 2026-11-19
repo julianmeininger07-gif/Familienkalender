@@ -138,9 +138,19 @@ export const eventSchema = z
     categoryId: z.union([z.uuid(), z.literal("")]).transform((v) => (v === "" ? null : v)),
     visibility: z.enum(["public", "private"]),
     reminders: z.array(z.number().int().min(0).max(40320)).max(5, "Höchstens 5 Erinnerungen."),
+    repeat: z.boolean(),
+    freq: z.enum(["DAILY", "WEEKLY", "MONTHLY", "YEARLY"]),
+    interval: z.coerce.number().int().min(1, "Der Abstand muss mindestens 1 sein.").max(99),
+    repeatEnd: z.enum(["never", "until", "count"]),
+    until: z.union([isoDate, z.literal("")]),
+    count: z.coerce.number().int().min(1).max(500),
+    attendees: z.array(z.object({ userId: z.uuid(), required: z.boolean() })).max(50),
   })
   .superRefine((v, ctx) => {
     if (!v.allDay && !v.startTime) ctx.addIssue({ code: "custom", message: "Bitte eine Uhrzeit angeben.", path: ["startTime"] });
+    if (v.repeat && v.repeatEnd === "until" && (!v.until || v.until < v.startDate)) {
+      ctx.addIssue({ code: "custom", message: "Bitte ein Enddatum für die Wiederholung nach dem Beginn wählen.", path: ["until"] });
+    }
   });
 
 export type EventInputData = z.infer<typeof eventSchema>;
@@ -160,6 +170,16 @@ export function parseEventForm(form: FormData) {
     categoryId: o.categoryId ?? "",
     visibility: o.visibility === "private" ? "private" : "public",
     reminders: [...new Set(form.getAll("reminders").map((r) => Number(r)))],
+    repeat: o.repeat === "on",
+    freq: o.freq ?? "WEEKLY",
+    interval: o.interval || "1",
+    repeatEnd: o.repeatEnd ?? "never",
+    until: o.until ?? "",
+    count: o.count || "10",
+    attendees: [...new Set(form.getAll("attendees").map(String))].map((userId) => ({
+      userId,
+      required: o[`required_${userId}`] === "on",
+    })),
   });
 }
 

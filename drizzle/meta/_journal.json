@@ -15,6 +15,13 @@
       "when": 1795107501938,
       "tag": "0001_filter_ohne_kategorie",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795107845194,
+      "tag": "0002_serien",
+      "breakpoints": true
     }
   ]
 }

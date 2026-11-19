@@ -104,6 +104,8 @@ export const events = pgTable(
     categoryId: uuid("category_id").references(() => categories.id, { onDelete: "set null" }),
     visibility: visibilityEnum("visibility").notNull().default("public"),
     rrule: text("rrule"),
+    /** Bei Serien: Ende des letzten Vorkommens, null = endlos. Für schnelle Zeitraum-Abfragen. */
+    repeatUntil: timestamp("repeat_until", { withTimezone: true }),
     createdAt: createdAt(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },

@@ -4,7 +4,7 @@ import { EventForm } from "@/components/event-form";
 import { requireUser } from "@/lib/auth";
 import { todayInBerlin } from "@/lib/dates";
 import { canCreate } from "@/lib/events";
-import { categoriesFor } from "@/lib/people";
+import { activePeople, categoriesFor } from "@/lib/people";
 import { utcToBerlin } from "@/lib/time";
 
 export const metadata = { title: "Neuer Termin · Familienkalender" };
@@ -35,6 +35,7 @@ export default async function NewEventPage({ searchParams }: { searchParams: Pro
       <EventForm
         action={createEvent}
         categories={await categoriesFor(user)}
+        people={(await activePeople()).filter((p) => p.id !== user.id)}
         submitLabel="Termin speichern"
         cancelHref={`/?datum=${date}`}
         values={{
@@ -49,6 +50,13 @@ export default async function NewEventPage({ searchParams }: { searchParams: Pro
           categoryId: "",
           visibility: "public",
           reminders: [],
+          repeat: false,
+          freq: "WEEKLY",
+          interval: 1,
+          repeatEnd: "never",
+          until: "",
+          count: 10,
+          attendees: [],
         }}
       />
     </div>

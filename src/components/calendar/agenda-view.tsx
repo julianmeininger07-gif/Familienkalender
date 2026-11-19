@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { addDays, daysInMonth, todayInBerlin, weekday, ymd } from "@/lib/dates";
 import { holidaysBetween } from "@/lib/holidays";
 import type { CalendarContext } from "./calendar-view";
-import { fetchCalendarData, isVisible, type CalendarEvent, type SchoolHoliday } from "./types";
+import { eventHref, fetchCalendarData, isVisible, type CalendarEvent, type SchoolHoliday } from "./types";
 
 const dayFmt = new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
 const shortFmt = new Intl.DateTimeFormat("de-DE", { day: "2-digit", month: "2-digit", timeZone: "UTC" });
@@ -120,7 +120,7 @@ export function AgendaView({
                     ) : (
                       <li key={i}>
                         <Link
-                          href={`/termin/${item.event.id}`}
+                          href={eventHref(item.event)}
                           className="flex items-start gap-2 rounded-lg px-1 py-1 text-sm hover:bg-gray-50"
                         >
                           <span
@@ -136,6 +136,7 @@ export function AgendaView({
                           <span className="w-24 shrink-0 tabular-nums text-gray-500">{item.time}</span>
                           <span className="min-w-0">
                             <span className="font-medium">
+                              {item.event.invitation?.required && item.event.invitation.response === "pending" && "❓ "}
                               {item.event.visibility === "private" && "🔒 "}
                               {item.event.title}
                             </span>

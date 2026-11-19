@@ -2,6 +2,7 @@ import { changePassword } from "@/actions/auth";
 import { createCategory, deleteCategory } from "@/actions/categories";
 import { updateProfile } from "@/actions/profile";
 import { ActionForm } from "@/components/action-form";
+import { InstallApp } from "@/components/install-app";
 import { PushSettings } from "@/components/push-settings";
 import { Field, Input, SubmitButton } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
@@ -17,6 +18,11 @@ export default async function SettingsPage() {
   const [cats, keys] = await Promise.all([categoriesFor(user), vapidKeys()]);
   return (
     <div className="max-w-lg space-y-10">
+      <section>
+        <h2 className="mb-3 text-xl font-semibold">Als App aufs Handy</h2>
+        <InstallApp />
+      </section>
+
       <section>
         <h2 className="mb-3 text-xl font-semibold">Benachrichtigungen</h2>
         <PushSettings publicKey={keys.publicKey} />

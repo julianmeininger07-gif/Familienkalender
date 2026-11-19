@@ -1,5 +1,6 @@
-# Startet App und Datenbank:  docker compose up -d --build
-# Danach im Browser: http://localhost:3000 (beim ersten Aufruf wird das Admin-Konto angelegt)
+# Nur zum Ausprobieren auf dem eigenen Rechner:   docker compose up -d --build   → http://localhost:3000
+# Auf einem Server mit eigener Domain und HTTPS:  docker compose --profile https up -d --build
+# Einstellungen kommen aus der Datei .env (Vorlage: .env.example). Anleitung: docs/hosting.md
 services:
   db:
     image: postgres:16-alpine
@@ -24,8 +25,27 @@ services:
     environment:
       DATABASE_URL: postgres://kalender:${DB_PASSWORD:-kalender}@db:5432/kalender
       APP_URL: ${APP_URL:-http://localhost:3000}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
+
+  caddy:
+    image: caddy:2-alpine
+    profiles: ["https"]
+    restart: unless-stopped
+    depends_on: [app]
+    environment:
+      DOMAIN: ${DOMAIN:?DOMAIN in .env setzen}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
 
 volumes:
   db-data:
+  caddy-data:

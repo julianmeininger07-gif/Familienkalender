@@ -1,0 +1,5 @@
+# HTTPS vor der App. Caddy besorgt und erneuert das Zertifikat selbst (Let's Encrypt).
+{$DOMAIN} {
+	encode zstd gzip
+	reverse_proxy app:3000
+}

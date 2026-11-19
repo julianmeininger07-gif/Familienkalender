@@ -1,7 +1,26 @@
-/* Service Worker: empfängt Push-Nachrichten und öffnet beim Antippen den Termin. */
+/* Service Worker: Offline-Seite, Push-Nachrichten, beim Antippen den Termin öffnen. */
 
-self.addEventListener("install", () => self.skipWaiting());
-self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
+const CACHE = "fk-v1";
+const OFFLINE = ["/offline.html", "/icon-192.png"];
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(OFFLINE)).then(() => self.skipWaiting()));
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    (async () => {
+      for (const key of await caches.keys()) if (key !== CACHE) await caches.delete(key);
+      await self.clients.claim();
+    })(),
+  );
+});
+
+// Kalenderdaten sind immer frisch vom Server. Nur wenn das Netz fehlt, kommt die Offline-Seite.
+self.addEventListener("fetch", (event) => {
+  if (event.request.mode !== "navigate") return;
+  event.respondWith(fetch(event.request).catch(async () => (await caches.match("/offline.html")) ?? Response.error()));
+});
 
 self.addEventListener("push", (event) => {
   let data = { title: "Familienkalender", body: "", url: "/" };

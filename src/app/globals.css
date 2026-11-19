@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ferien: #fff200;        /* Schulferien: Neongelb wie im gedruckten Kalender */
+  --color-ferien-soft: #fffaa0;
+  --color-feiertag: #d4001a;      /* Feiertage: Rot */
+  --color-brand: #1f2937;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html, body {
+  background: #ffffff;
+  color: #111827;
+}
+
+/* Platz für die untere Navigation und den iPhone-Home-Balken */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}

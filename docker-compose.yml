@@ -1,0 +1,31 @@
+# Startet App und Datenbank:  docker compose up -d --build
+# Danach im Browser: http://localhost:3000 (beim ersten Aufruf wird das Admin-Konto angelegt)
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kalender
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-kalender}
+      POSTGRES_DB: kalender
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kalender"]
+      interval: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://kalender:${DB_PASSWORD:-kalender}@db:5432/kalender
+      APP_URL: ${APP_URL:-http://localhost:3000}
+    ports:
+      - "3000:3000"
+
+volumes:
+  db-data:

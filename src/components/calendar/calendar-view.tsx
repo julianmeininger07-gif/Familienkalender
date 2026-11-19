@@ -15,6 +15,7 @@ import { bavarianHolidays, holidaysBetween } from "@/lib/holidays";
 import { AgendaView } from "./agenda-view";
 import { FilterPanel } from "./filter-panel";
 import {
+  eventHref,
   fetchCalendarData,
   isVisible,
   VIEW_LABELS,
@@ -75,16 +76,16 @@ export function toFcEvent(e: CalendarEvent, ctx: CalendarContext): EventInput {
   const cat = ctx.categories.find((c) => c.id === e.categoryId);
   const color = owner?.color ?? "#475569";
   return {
-    id: e.id,
-    title: `${e.visibility === "private" ? "🔒 " : ""}${e.title}`,
+    id: e.occurrence ? `${e.id}|${e.occurrence}` : e.id,
+    title: `${e.invitation?.response === "pending" && e.invitation.required ? "❓ " : ""}${e.visibility === "private" ? "🔒 " : ""}${e.title}`,
     start: e.start,
     end: e.end,
     allDay: e.allDay,
     backgroundColor: color,
     borderColor: cat?.color ?? color,
     textColor: "#ffffff",
-    classNames: ["fk-termin", cat ? "fk-mit-kategorie" : ""],
-    extendedProps: { kind: "termin", location: e.location },
+    classNames: ["fk-termin", cat ? "fk-mit-kategorie" : "", e.invitation?.response === "declined" ? "fk-abgesagt" : ""],
+    extendedProps: { kind: "termin", location: e.location, href: eventHref(e) },
   };
 }
 
@@ -207,7 +208,7 @@ export function CalendarView({
   };
 
   const onEventClick = (arg: EventClickArg) => {
-    if (arg.event.extendedProps.kind === "termin") router.push(`/termin/${arg.event.id}`);
+    if (arg.event.extendedProps.kind === "termin") router.push(arg.event.extendedProps.href);
   };
 
   const onDateClick = (arg: DateClickArg) => {

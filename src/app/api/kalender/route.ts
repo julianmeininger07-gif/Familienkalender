@@ -1,10 +1,10 @@
-import { and, gte, lte } from "drizzle-orm";
+import { and, eq, gte, inArray, lte } from "drizzle-orm";
 import { NextResponse, type NextRequest } from "next/server";
 import { db } from "@/db";
-import { schoolHolidays } from "@/db/schema";
+import { eventAttendees, schoolHolidays } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth";
 import { addDays } from "@/lib/dates";
-import { eventsInRange } from "@/lib/events";
+import { occurrencesInRange } from "@/lib/events";
 import { berlinToUtc, utcToBerlin } from "@/lib/time";
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -31,20 +31,32 @@ export async function GET(req: NextRequest) {
       .from(schoolHolidays)
       .where(and(lte(schoolHolidays.startDate, end), gte(schoolHolidays.endDate, start)))
       .orderBy(schoolHolidays.startDate),
-    eventsInRange(user, berlinToUtc(start), berlinToUtc(addDays(end, 1))),
+    occurrencesInRange(user, berlinToUtc(start), berlinToUtc(addDays(end, 1))),
   ]);
 
-  const events = rows.map((e) => ({
+  const ids = [...new Set(rows.map((r) => r.event.id))];
+  const mine = ids.length
+    ? await db
+        .select({ eventId: eventAttendees.eventId, response: eventAttendees.response, required: eventAttendees.responseRequired })
+        .from(eventAttendees)
+        .where(and(eq(eventAttendees.userId, user.id), inArray(eventAttendees.eventId, ids)))
+    : [];
+  const myStatus = new Map(mine.map((m) => [m.eventId, m]));
+
+  const events = rows.map(({ event: e, startsAt, endsAt, recurring }) => ({
     id: e.id,
+    // Vorkommen einer Serie: Beginn als Schlüssel, damit Klick und Absage das richtige treffen.
+    occurrence: recurring ? startsAt.toISOString() : null,
     title: e.title,
     allDay: e.allDay,
     // Ganztägig: reine Kalenderdaten (Ende exklusiv), sonst Zeitpunkte.
-    start: e.allDay ? utcToBerlin(e.startsAt).date : e.startsAt.toISOString(),
-    end: e.allDay ? utcToBerlin(e.endsAt).date : e.endsAt.toISOString(),
+    start: e.allDay ? utcToBerlin(startsAt).date : startsAt.toISOString(),
+    end: e.allDay ? utcToBerlin(endsAt).date : endsAt.toISOString(),
     ownerId: e.ownerId,
     categoryId: e.categoryId,
     visibility: e.visibility,
     location: e.location,
+    invitation: myStatus.get(e.id) ? { response: myStatus.get(e.id)!.response, required: myStatus.get(e.id)!.required } : null,
   }));
 
   return NextResponse.json({ schoolHolidays: ferien, events });

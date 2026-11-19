@@ -4,9 +4,11 @@ export const dynamic = "force-dynamic";
 import { logout } from "@/actions/auth";
 import { DesktopNav, MobileNav } from "@/components/nav";
 import { requireUser } from "@/lib/auth";
+import { openInvitationCount } from "@/lib/invitations";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
+  const invites = await openInvitationCount(user.id);
   return (
     <div className="min-h-dvh pb-20 md:pb-0">
       <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/95 backdrop-blur">
@@ -16,7 +18,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             Familienkalender
           </div>
           <div className="flex-1">
-            <DesktopNav isAdmin={user.role === "admin"} />
+            <DesktopNav isAdmin={user.role === "admin"} invites={invites} />
           </div>
           <div className="flex items-center gap-3 text-sm">
             <span className="hidden items-center gap-1.5 sm:flex">
@@ -32,7 +34,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
-      <MobileNav isAdmin={user.role === "admin"} />
+      <MobileNav isAdmin={user.role === "admin"} invites={invites} />
     </div>
   );
 }

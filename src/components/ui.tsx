@@ -14,11 +14,14 @@ export function Field({ label, hint, children }: { label: string; hint?: string;
   );
 }
 
+/** Volle Breite, außer der Aufrufer gibt selbst eine Breite vor. */
+const width = (cls?: string) => (cls && /(^|\s)w-/.test(cls) ? "" : "w-full");
+
 export function Input(props: ComponentProps<"input">) {
   return (
     <input
       {...props}
-      className={`w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-base outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 ${props.className ?? ""}`}
+      className={`${width(props.className)} rounded-lg border border-gray-300 bg-white px-3 py-2 text-base outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 disabled:bg-gray-100 disabled:text-gray-400 ${props.className ?? ""}`}
     />
   );
 }
@@ -27,7 +30,7 @@ export function Select(props: ComponentProps<"select">) {
   return (
     <select
       {...props}
-      className={`w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-base outline-none focus:border-gray-900 ${props.className ?? ""}`}
+      className={`${width(props.className)} rounded-lg border border-gray-300 bg-white px-3 py-2 text-base outline-none focus:border-gray-900 ${props.className ?? ""}`}
     />
   );
 }

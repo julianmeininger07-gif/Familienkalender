@@ -191,6 +191,7 @@ export const userPreferences = pgTable("user_preferences", {
     .references(() => users.id, { onDelete: "cascade" }),
   hiddenUserIds: uuid("hidden_user_ids").array().notNull().default([]),
   hiddenCategoryIds: uuid("hidden_category_ids").array().notNull().default([]),
+  showUncategorized: boolean("show_uncategorized").notNull().default(true),
   defaultView: text("default_view").notNull().default("month"),
   defaultReminderMinutes: integer("default_reminder_minutes"),
 });

@@ -1,0 +1,1 @@
+ALTER TABLE "user_preferences" ADD COLUMN "show_uncategorized" boolean DEFAULT true NOT NULL;

@@ -3,7 +3,7 @@
 import { and, eq, gt, isNull, sql } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
-import { invitations, passwordResets, users } from "@/db/schema";
+import { categories, invitations, passwordResets, users } from "@/db/schema";
 import { createSession, destroyAllSessions, destroySession, requireUser } from "@/lib/auth";
 import type { FormState } from "@/lib/form-state";
 import { hashPassword, verifyPassword } from "@/lib/password";
@@ -64,6 +64,14 @@ export async function setupAdmin(_prev: FormState, form: FormData): Promise<Form
       .insert(users)
       .values({ name, email, passwordHash, role: "admin", color: USER_COLORS[0] })
       .returning({ id: users.id });
+    // Gemeinsame Start-Kategorien; der Admin kann sie in den Einstellungen ändern.
+    await tx.insert(categories).values([
+      { name: "Familie", color: "#16a34a" },
+      { name: "Arbeit", color: "#2563eb" },
+      { name: "Privat", color: "#9333ea" },
+      { name: "Schule", color: "#ea580c" },
+      { name: "Geburtstag", color: "#db2777" },
+    ]);
     return u;
   });
   if (!created) return { error: "Die App ist bereits eingerichtet. Bitte melde dich an." };

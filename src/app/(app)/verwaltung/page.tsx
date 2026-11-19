@@ -7,6 +7,7 @@ import {
   revokeInvitation,
   setUserLocked,
 } from "@/actions/admin";
+import Link from "next/link";
 import { ActionForm } from "@/components/action-form";
 import { Field, Input, Select, SubmitButton } from "@/components/ui";
 import { db } from "@/db";
@@ -29,6 +30,11 @@ export default async function AdminPage() {
 
   return (
     <div className="space-y-10">
+      <nav className="flex flex-wrap gap-2 text-sm">
+        <Link href="/verwaltung/schulferien" className="rounded-lg border border-gray-300 px-3 py-1.5 font-medium hover:bg-gray-50">
+          <span className="mr-1 inline-block h-3 w-3 rounded-sm bg-ferien align-middle" /> Schulferien pflegen
+        </Link>
+      </nav>
       <section className="max-w-lg">
         <h2 className="mb-1 text-xl font-semibold">Person einladen</h2>
         <p className="mb-4 text-sm text-gray-500">

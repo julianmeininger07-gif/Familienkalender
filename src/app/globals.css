@@ -17,3 +17,61 @@ html, body {
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+/* ---------- FullCalendar an den Look anpassen ---------- */
+.fk-calendar .fc {
+  --fc-border-color: #e5e7eb;
+  --fc-today-bg-color: rgba(17, 24, 39, 0.05);
+  --fc-page-bg-color: #ffffff;
+  --fc-neutral-bg-color: #f9fafb;
+  --fc-bg-event-opacity: 1;
+  font-size: 0.875rem;
+}
+.fk-calendar .fc .fc-col-header-cell-cushion,
+.fk-calendar .fc .fc-daygrid-day-number {
+  color: #111827;
+  text-decoration: none;
+}
+.fk-calendar .fc .fk-red .fc-daygrid-day-number,
+.fk-calendar .fc .fk-red .fc-col-header-cell-cushion {
+  color: var(--color-feiertag);
+  font-weight: 700;
+}
+/* Schulferien: neongelber Hintergrund über den ganzen Tag */
+.fk-calendar .fc .fk-ferien-bg {
+  background: var(--color-ferien);
+}
+/* Ferien-Name: dezentes Band, Feiertag: rote Schrift ohne Kasten */
+.fk-calendar .fc .fk-ferien {
+  background: transparent;
+  border: none;
+  color: #4b4500;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+.fk-calendar .fc .fk-ferien .fc-event-main {
+  color: inherit;
+}
+.fk-calendar .fc .fk-feiertag {
+  background: transparent;
+  border: none;
+}
+.fk-calendar .fc .fk-feiertag .fc-event-main,
+.fk-calendar .fc .fk-feiertag .fc-event-title {
+  color: var(--color-feiertag);
+  font-weight: 700;
+}
+.fk-calendar .fc .fc-week-number,
+.fk-calendar .fc .fc-daygrid-week-number {
+  color: #9ca3af;
+  background: transparent;
+  font-size: 0.65rem;
+}
+@media (max-width: 640px) {
+  .fk-calendar .fc .fc-daygrid-week-number {
+    display: none;
+  }
+  .fk-calendar .fc .fc-daygrid-event {
+    font-size: 0.65rem;
+  }
+}

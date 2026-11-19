@@ -84,3 +84,21 @@ export function formToObject(form: FormData): Record<string, string> {
 export function firstError(error: z.ZodError): string {
   return error.issues[0]?.message ?? "Ungültige Eingabe.";
 }
+
+const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Bitte ein gültiges Datum wählen.");
+
+export const schoolHolidaySchema = z
+  .object({
+    name: z.string().trim().min(1, "Bitte einen Namen eingeben.").max(60),
+    startDate: isoDate,
+    endDate: isoDate,
+  })
+  .refine((v) => v.startDate <= v.endDate, { message: "Das Ende liegt vor dem Beginn.", path: ["endDate"] });
+
+/** Schuljahr aus dem Datum: ab August zählt das neue Schuljahr (z. B. 2027-09-14 → "2027/28"). */
+export function schoolYearOf(date: string): string {
+  const y = Number(date.slice(0, 4));
+  const m = Number(date.slice(5, 7));
+  const start = m >= 8 ? y : y - 1;
+  return `${start}/${String((start + 1) % 100).padStart(2, "0")}`;
+}

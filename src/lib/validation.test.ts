@@ -32,3 +32,16 @@ describe("Formular-Prüfung", () => {
     expect(inviteSchema.safeParse({ name: "Opa", email: "", role: "superuser" }).success).toBe(false);
   });
 });
+
+import { schoolHolidaySchema, schoolYearOf } from "./validation";
+
+describe("Schulferien", () => {
+  it("Schuljahr aus Datum", () => {
+    expect(schoolYearOf("2026-11-02")).toBe("2026/27");
+    expect(schoolYearOf("2027-05-18")).toBe("2026/27");
+    expect(schoolYearOf("2027-08-02")).toBe("2027/28");
+  });
+  it("Ende vor Beginn wird abgelehnt", () => {
+    expect(schoolHolidaySchema.safeParse({ name: "X", startDate: "2027-05-10", endDate: "2027-05-01" }).success).toBe(false);
+  });
+});

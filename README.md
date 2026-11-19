@@ -9,7 +9,7 @@ sind eingetragen.
 | Meilenstein | Inhalt | Status |
 | --- | --- | --- |
 | 1 | Grundgerüst, Login, Einladungen, Benutzerverwaltung | fertig |
-| 2 | Kalender-Ansichten, Feiertage, Schulferien | offen |
+| 2 | Kalender-Ansichten, Feiertage, Schulferien | fertig |
 | 3 | Termine, Kategorien, Filter | offen |
 | 4 | Wiederholung, Einladungen mit Zu-/Absage | offen |
 | 5 | Push-Benachrichtigungen und Erinnerungen | offen |
@@ -62,3 +62,11 @@ npm run dev                   # http://localhost:3000
 
 Technik: Next.js 16 (React 19, TypeScript), Tailwind CSS 4, PostgreSQL mit Drizzle ORM, Passwörter mit
 Argon2id, Sitzungen per HttpOnly-Cookie (in der Datenbank nur als Hash).
+
+## Feiertage und Schulferien
+
+- **Feiertage** rechnet die App für jedes Jahr selbst aus (`src/lib/holidays.ts`, Osterformel). Enthalten
+  sind alle gesetzlichen Feiertage in Bayern inklusive Mariä Himmelfahrt; das Augsburger Friedensfest
+  ist bewusst nicht dabei.
+- **Schulferien** legt das Kultusministerium fest. Die Schuljahre 2026/27 und 2027/28 sind vorbelegt
+  (`src/lib/school-holidays-data.ts`), weitere trägt der Admin unter „Verwaltung → Schulferien pflegen“ ein.

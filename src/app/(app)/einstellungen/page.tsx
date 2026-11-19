@@ -2,9 +2,11 @@ import { changePassword } from "@/actions/auth";
 import { createCategory, deleteCategory } from "@/actions/categories";
 import { updateProfile } from "@/actions/profile";
 import { ActionForm } from "@/components/action-form";
+import { PushSettings } from "@/components/push-settings";
 import { Field, Input, SubmitButton } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
 import { categoriesFor } from "@/lib/people";
+import { vapidKeys } from "@/lib/push";
 import { MIN_PASSWORD_LENGTH } from "@/lib/password";
 import { ROLE_LABELS, USER_COLORS } from "@/lib/validation";
 
@@ -12,9 +14,14 @@ export const metadata = { title: "Einstellungen · Familienkalender" };
 
 export default async function SettingsPage() {
   const user = await requireUser();
-  const cats = await categoriesFor(user);
+  const [cats, keys] = await Promise.all([categoriesFor(user), vapidKeys()]);
   return (
     <div className="max-w-lg space-y-10">
+      <section>
+        <h2 className="mb-3 text-xl font-semibold">Benachrichtigungen</h2>
+        <PushSettings publicKey={keys.publicKey} />
+      </section>
+
       <section>
         <h2 className="mb-1 text-xl font-semibold">Profil</h2>
         <p className="mb-4 text-sm text-gray-500">

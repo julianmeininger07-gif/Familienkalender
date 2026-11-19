@@ -261,7 +261,7 @@ export function EventForm({
                 </label>
               ))}
             </div>
-            <p className="mt-1 text-xs text-gray-500">Die Benachrichtigung kommt aufs Handy, sobald Push eingerichtet ist.</p>
+            <p className="mt-1 text-xs text-gray-500">Kommt als Push-Nachricht; einschalten unter Einstellungen → Benachrichtigungen.</p>
           </fieldset>
 
           <Field label="Notizen">

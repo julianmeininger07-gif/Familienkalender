@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { categories, eventAttendees, eventExceptions, events, reminders, users } from "@/db/schema";
 import { requireUser, type CurrentUser } from "@/lib/auth";
-import { canCreate, canEdit, toRecurrence, toTimes } from "@/lib/events";
+import { canCreate, canEdit, loadVisibleEvent, toRecurrence, toTimes } from "@/lib/events";
 import type { FormState } from "@/lib/form-state";
 import { notifyInvited, notifyResponse } from "@/lib/notify";
 import { addDays } from "@/lib/dates";
@@ -214,4 +214,15 @@ export async function respondToEvent(eventId: string, response: "accepted" | "de
   if (row) await notifyResponse(eventId, me, response);
   revalidatePath("/", "layout");
   redirect(returnTo.startsWith("/") ? returnTo : "/");
+}
+
+/** Eigene Erinnerungen für einen sichtbaren Termin setzen (auch für fremde Termine). */
+export async function saveMyReminders(eventId: string, _prev: FormState, form: FormData): Promise<FormState> {
+  const me = await requireUser();
+  const event = await loadVisibleEvent(me, eventId);
+  if (!event) return { error: "Termin nicht gefunden." };
+  const minutes = [...new Set(form.getAll("reminders").map(Number))].filter((m) => Number.isInteger(m) && m >= 0 && m <= 40320).slice(0, 5);
+  await db.transaction((tx) => setMyReminders(tx, eventId, me.id, minutes));
+  revalidatePath(`/termin/${eventId}`);
+  return { success: minutes.length ? "Erinnerung gespeichert." : "Erinnerung entfernt." };
 }

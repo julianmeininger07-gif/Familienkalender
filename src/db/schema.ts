@@ -200,3 +200,9 @@ export const userPreferences = pgTable("user_preferences", {
 
 export type User = typeof users.$inferSelect;
 export type Role = User["role"];
+
+/** Einstellungen der Installation, z. B. die automatisch erzeugten Push-Schlüssel. */
+export const appSettings = pgTable("app_settings", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+});

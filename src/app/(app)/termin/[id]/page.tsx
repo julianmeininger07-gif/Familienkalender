@@ -1,7 +1,8 @@
 import { and, asc, eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { deleteEvent, respondToEvent } from "@/actions/events";
+import { deleteEvent, respondToEvent, saveMyReminders } from "@/actions/events";
+import { ActionForm } from "@/components/action-form";
 import { SubmitButton } from "@/components/ui";
 import { db } from "@/db";
 import { categories, eventAttendees, reminders, users } from "@/db/schema";
@@ -168,19 +169,31 @@ export default async function EventPage({
             </dd>
           </>
         )}
-        {myReminders.length > 0 && (
-          <>
-            <dt className="text-gray-500">Erinnerung</dt>
-            <dd>
-              {myReminders
-                .map((r) => REMINDER_PRESETS.find((p) => p.minutes === r.minutes)?.label ?? `${r.minutes} Min. vorher`)
-                .join(", ")}
-            </dd>
-          </>
-        )}
       </dl>
 
       {event.notes && <p className="whitespace-pre-wrap rounded-lg bg-gray-50 p-3 text-sm">{event.notes}</p>}
+
+      <details className="rounded-xl border border-gray-200 p-4" open={myReminders.length > 0}>
+        <summary className="cursor-pointer text-sm font-semibold">
+          🔔 Meine Erinnerung
+          {myReminders.length > 0 &&
+            `: ${myReminders.map((r) => REMINDER_PRESETS.find((p) => p.minutes === r.minutes)?.label ?? `${r.minutes} Min. vorher`).join(", ")}`}
+        </summary>
+        <ActionForm action={saveMyReminders.bind(null, event.id)} className="mt-3 space-y-3" resetOnSuccess={false}>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+            {REMINDER_PRESETS.map((r) => (
+              <label key={r.minutes} className="flex items-center gap-2">
+                <input type="checkbox" name="reminders" value={r.minutes} defaultChecked={myReminders.some((m) => m.minutes === r.minutes)} />
+                {r.label}
+              </label>
+            ))}
+          </div>
+          <SubmitButton variant="secondary">Speichern</SubmitButton>
+        </ActionForm>
+        <p className="mt-2 text-xs text-gray-500">
+          Kommt als Push-Nachricht auf deine Geräte. Einschalten unter <Link href="/einstellungen" className="underline">Einstellungen</Link>.
+        </p>
+      </details>
 
       {editable && (
         <div className="flex flex-wrap items-start gap-3 border-t border-gray-200 pt-4">

@@ -12,7 +12,7 @@ sind eingetragen.
 | 2 | Kalender-Ansichten, Feiertage, Schulferien | fertig |
 | 3 | Termine, Kategorien, Filter | fertig |
 | 4 | Wiederholung, Einladungen mit Zu-/Absage | fertig |
-| 5 | Push-Benachrichtigungen und Erinnerungen | offen |
+| 5 | Push-Benachrichtigungen und Erinnerungen | fertig |
 | 6 | PWA, Feinschliff, Anleitung | offen |
 
 ## Starten mit Docker (empfohlen)

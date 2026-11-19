@@ -13,7 +13,7 @@ sind eingetragen.
 | 3 | Termine, Kategorien, Filter | fertig |
 | 4 | Wiederholung, Einladungen mit Zu-/Absage | fertig |
 | 5 | Push-Benachrichtigungen und Erinnerungen | fertig |
-| 6 | PWA, Feinschliff, Anleitung | offen |
+| 6 | PWA, Feinschliff, Anleitung | fertig |
 
 ## Starten mit Docker (empfohlen)
 
@@ -25,13 +25,11 @@ docker compose up -d --build
 
 Dann <http://localhost:3000> öffnen. Beim allerersten Aufruf legst du das Admin-Konto an.
 
-Für den echten Betrieb:
+Für den echten Betrieb mit eigener Domain und HTTPS (nötig für Handy-App und Push) steht alles in
+**[docs/hosting.md](docs/hosting.md)**. Kurz: `.env` aus `.env.example` anlegen, dann
+`docker compose --profile https up -d --build`.
 
-- `DB_PASSWORD` auf ein eigenes Passwort setzen (z. B. in einer `.env`-Datei neben `docker-compose.yml`).
-- `APP_URL` auf die öffentliche Adresse setzen, z. B. `https://kalender.example.de`. Daraus werden die
-  Einladungslinks gebaut.
-- Die App braucht HTTPS, sonst erlauben Handys weder Installation noch Push-Nachrichten. Am einfachsten
-  mit einem Reverse Proxy wie Caddy davor.
+Eine Kurzanleitung zum Weitergeben an Familie und Freunde steht in **[docs/anleitung.md](docs/anleitung.md)**.
 
 Datenbank-Updates laufen beim Start der App automatisch.
 
